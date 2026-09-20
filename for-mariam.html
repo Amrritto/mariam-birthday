@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For Mariam ♥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --ink:        #4e0d12;   /* deep red — all readable text */
+  --ink-soft:   #8a4147;   /* muted red for secondary copy */
+  --red:        #c8102e;   /* vibrant red — primary accent */
+  --red-deep:   #3d0a0e;   /* dark red panel */
+  --rose:       #e8798c;   /* rose — highlights, dashes, glow */
+  --rose-pale:  #f6c3cc;
+  --blush:      #fce6ea;   /* light rose background */
+  --cream:      #fff7f5;   /* page background */
+  --paper:      #ffffff;
+  --line:       rgba(200,16,46,.16);
+  --line-soft:  rgba(200,16,46,.09);
+  --shadow-lg:  0 34px 70px -28px rgba(78,13,18,.38);
+  --shadow-md:  0 18px 38px -20px rgba(78,13,18,.34);
+  --serif: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --sans:  Manrope, "Helvetica Neue", Arial, sans-serif;
+  --ease:  cubic-bezier(.16,1,.3,1);
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html,body{
+  margin:0; padding:0;
+  height:100%;
+  width:100%;
+  overflow:hidden;                 /* strict flow — no free scrolling */
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ============================================================
+   AMBIENT BACKGROUND
+   ============================================================ */
+.glow{
+  position:fixed; z-index:0; border-radius:50%;
+  filter:blur(90px); pointer-events:none;
+}
+.glow-a{ width:46rem; height:46rem; top:-22rem; left:-16rem; background:var(--rose); opacity:.34; animation:drift-a 22s ease-in-out infinite; }
+.glow-b{ width:40rem; height:40rem; right:-18rem; bottom:-18rem; background:var(--red); opacity:.18; animation:drift-b 26s ease-in-out infinite; }
+.glow-c{ width:26rem; height:26rem; left:38%; top:42%; background:var(--rose-pale); opacity:.4; animation:drift-c 18s ease-in-out infinite; }
+@keyframes drift-a{ 0%,100%{transform:translate3d(0,0,0) scale(1)} 50%{transform:translate3d(6rem,4rem,0) scale(1.12)} }
+@keyframes drift-b{ 0%,100%{transform:translate3d(0,0,0) scale(1.05)} 50%{transform:translate3d(-5rem,-3rem,0) scale(.92)} }
+@keyframes drift-c{ 0%,100%{transform:translate3d(0,0,0)} 50%{transform:translate3d(-4rem,3rem,0)} }
+
+/* drifting petals */
+.petal{
+  position:fixed; top:-8vh; z-index:1; pointer-events:none;
+  border-radius:50% 0 50% 0;
+  background:linear-gradient(135deg,var(--rose),var(--rose-pale));
+  opacity:0;
+  animation:petal-fall linear infinite;
+}
+@keyframes petal-fall{
+  0%   { transform:translate3d(0,-10vh,0) rotate(0deg);     opacity:0; }
+  8%   { opacity:.5; }
+  50%  { transform:translate3d(6vw,52vh,0) rotate(180deg);  opacity:.45; }
+  92%  { opacity:.35; }
+  100% { transform:translate3d(-4vw,112vh,0) rotate(400deg); opacity:0; }
+}
+
+/* ============================================================
+   PAGE SYSTEM
+   ============================================================ */
+.stage{ position:relative; z-index:2; height:100%; }
+
+.page{
+  position:absolute; inset:0;
+  display:none;
+  overflow-y:auto;
+  -ms-overflow-style:none; scrollbar-width:none;
+  padding:
+    calc(env(safe-area-inset-top,0px) + 26px) 0
+    calc(env(safe-area-inset-bottom,0px) + 92px);
+}
+.page::-webkit-scrollbar{ display:none; }
+.page.is-active{ display:block; animation:page-in .85s var(--ease) both; }
+.page.is-leaving{ display:block; animation:page-out .42s ease-in both; pointer-events:none; }
+
+@keyframes page-in{  from{opacity:0; transform:scale(.965) translateY(18px); filter:blur(6px);} to{opacity:1; transform:none; filter:none;} }
+@keyframes page-out{ from{opacity:1; transform:none;} to{opacity:0; transform:scale(1.03) translateY(-14px); filter:blur(5px);} }
+
+/* rose veil that sweeps across during a transition */
+.veil{
+  position:fixed; inset:0; z-index:60; pointer-events:none;
+  background:linear-gradient(105deg,transparent 0%,rgba(232,121,140,.0) 22%,rgba(232,121,140,.55) 46%,rgba(200,16,46,.42) 54%,rgba(232,121,140,0) 80%,transparent 100%);
+  transform:translateX(-120%);
+}
+.veil.sweep{ animation:veil-sweep 1.05s var(--ease) both; }
+@keyframes veil-sweep{ to{ transform:translateX(120%); } }
+
+.wrap{ width:min(1140px, calc(100% - 44px)); margin:0 auto; }
+.center-screen{
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  min-height:calc(100dvh - 140px); text-align:center;
+}
+
+/* staggered reveal */
+[data-reveal]{ opacity:0; transform:translateY(22px); }
+.page.is-active [data-reveal]{ animation:reveal .95s var(--ease) both; animation-delay:var(--d,0ms); }
+@keyframes reveal{ to{ opacity:1; transform:none; } }
+
+/* ============================================================
+   TYPE
+   ============================================================ */
+h1,h2,h3{ font-family:var(--serif); font-weight:400; color:var(--ink); line-height:1; margin:0; }
+h1{ font-size:clamp(3rem,7.2vw,6rem); letter-spacing:-.035em; line-height:.98; }
+h2{ font-size:clamp(2.6rem,5.6vw,4.6rem); letter-spacing:-.025em; }
+h3{ font-family:var(--sans); font-weight:800; letter-spacing:-.01em; }
+p{ margin:0; }
+
+.script{ font-family:var(--serif); font-style:italic; color:var(--rose); }
+
+.eyebrow{
+  display:inline-flex; align-items:center; gap:12px;
+  color:var(--rose); font-size:12.5px; font-weight:700; letter-spacing:.06em;
+}
+.eyebrow::before{ content:""; width:38px; height:1.5px; background:var(--rose); border-radius:2px; }
+
+.lede{
+  max-width:46ch; color:var(--ink-soft);
+  font-size:clamp(15px,1.6vw,17px); line-height:1.75;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  position:relative; display:inline-flex; align-items:center; gap:10px;
+  border:0; border-radius:999px; padding:15px 30px;
+  font:700 15px/1 var(--sans); cursor:pointer;
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .3s ease, color .3s ease, border-color .3s ease;
+}
+.btn:focus-visible{ outline:3px solid var(--rose); outline-offset:3px; }
+.btn-primary{ color:#fff; background:var(--red); box-shadow:0 14px 26px -14px rgba(200,16,46,.9); }
+.btn-primary:hover{ transform:translateY(-3px); background:#b00c27; box-shadow:0 22px 34px -16px rgba(200,16,46,.85); }
+.btn-ghost{ color:var(--ink); background:transparent; border:1.5px solid var(--line); }
+.btn-ghost:hover{ transform:translateY(-3px); border-color:var(--rose); color:var(--red); }
+.btn-light{ color:var(--red-deep); background:var(--blush); }
+.btn-light:hover{ transform:translateY(-3px); background:#fff; }
+.btn.is-hidden{ display:none; }
+.btn-appear{ animation:pop-in .85s var(--ease) both; }
+@keyframes pop-in{ from{ opacity:0; transform:translateY(16px) scale(.94); } to{ opacity:1; transform:none; } }
+
+/* ============================================================
+   PAGE 1 — ENVELOPE
+   ============================================================ */
+.env-stage{ perspective:1400px; margin:14px 0 30px; padding-top:clamp(110px,18vh,160px); }
+
+.envelope{
+  position:relative; width:min(360px,86vw); aspect-ratio:360/240;
+  margin:0 auto; cursor:pointer;
+  perspective:1100px;
+  animation:env-breathe 4.4s ease-in-out infinite;
+  transition:transform .6s var(--ease);
+}
+.envelope:focus-visible{ outline:3px solid var(--rose); outline-offset:14px; border-radius:14px; }
+@keyframes env-breathe{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.envelope.is-open{ animation:none; }
+
+/* body of the envelope */
+.env-back{
+  position:absolute; inset:0; border-radius:12px;
+  background:linear-gradient(160deg,#e8798c,#d4536a);
+  box-shadow:var(--shadow-lg);
+}
+.env-front{
+  position:absolute; inset:0; z-index:4; border-radius:12px;
+  background:linear-gradient(160deg,#e06a80,#c94a61);
+  clip-path:polygon(0 34%,50% 72%,100% 34%,100% 100%,0 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
+}
+.env-flap{
+  position:absolute; top:0; left:0; right:0; height:58%; z-index:5;
+  background:linear-gradient(180deg,#eb8496,#dd6076);
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  transform-origin:top center; transform:rotateX(0deg);
+  transition:transform 1s var(--ease), z-index 0s .45s;
+  border-radius:12px 12px 0 0;
+}
+.envelope.is-open .env-flap{ transform:rotateX(-172deg); z-index:1; }
+
+/* wax seal */
+.seal{
+  position:absolute; z-index:6; left:50%; top:52%; transform:translate(-50%,-50%);
+  width:74px; height:74px; border-radius:50%;
+  display:grid; place-items:center;
+  background:radial-gradient(circle at 34% 30%,#e0304a,#9c0a1f 68%);
+  box-shadow:0 8px 18px -6px rgba(78,13,18,.6), inset 0 2px 5px rgba(255,255,255,.28);
+  color:#ffdfe4; font-family:var(--serif); font-size:17px; letter-spacing:.04em;
+  transition:transform .55s var(--ease), opacity .45s ease;
+}
+.envelope.is-open .seal{ transform:translate(-50%,-50%) scale(.3) rotate(-25deg); opacity:0; }
+
+/* letter that rises out */
+.env-letter{
+  position:absolute; z-index:3; left:50%; bottom:12px; transform:translateX(-50%);
+  width:88%; min-height:74%;
+  padding:26px 24px;
+  background:var(--paper);
+  border-radius:8px;
+  border:1px dashed var(--rose-pale);
+  box-shadow:0 10px 26px -18px rgba(78,13,18,.5);
+  text-align:left;
+  display:flex; flex-direction:column; justify-content:center;
+  opacity:0;
+  transform:translate(-50%,6%);
+  transition:transform 1.25s .5s var(--ease), opacity .5s .5s ease, box-shadow 1.2s .5s ease;
+}
+.envelope.is-open .env-letter{
+  opacity:1;
+  transform:translate(-50%,-88%);
+  box-shadow:var(--shadow-lg);
+}
+.env-letter .to{ font-family:var(--serif); font-size:1.45rem; color:var(--red); margin-bottom:8px; }
+.env-letter .body{ font-size:14.5px; line-height:1.65; color:var(--ink); min-height:3.3em; }
+.env-letter .sign{ margin-top:14px; text-align:right; font-family:var(--serif); font-style:italic; color:var(--rose); }
+.caret{ display:inline-block; width:1px; margin-left:2px; border-left:1.5px solid var(--rose); animation:blink .9s step-end infinite; }
+@keyframes blink{ 50%{opacity:0} }
+
+.tap-hint{
+  color:var(--ink-soft); font-size:13.5px; letter-spacing:.02em;
+  display:inline-flex; align-items:center; gap:9px;
+  transition:opacity .4s ease;
+}
+.tap-hint .dot{ width:7px; height:7px; border-radius:50%; background:var(--red); animation:pulse 1.6s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{transform:scale(1); opacity:1} 50%{transform:scale(1.7); opacity:.35} }
+.tap-hint.is-gone{ animation:none !important; opacity:0; pointer-events:none; }
+
+/* ============================================================
+   PAGE 2 — INVITATION + TICKET
+   ============================================================ */
+.hero{ display:grid; align-items:center; min-height:calc(100dvh - 150px); }
+.hero-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(30px,5vw,64px); align-items:center; }
+.hero h1{ margin:20px 0 20px; max-width:11ch; }
+.hero h1 em{ font-style:italic; color:var(--rose); }
+.hero-actions{ display:flex; flex-wrap:wrap; gap:14px; margin-top:32px; }
+
+.ticket-scene{ perspective:1100px; display:grid; place-items:center; }
+.ticket{
+  position:relative; width:min(370px,100%);
+  padding:16px; background:var(--paper);
+  border-radius:6px;
+  box-shadow:var(--shadow-lg);
+  transform:rotate(2.2deg);
+  animation:ticket-float 6s ease-in-out infinite;
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+@keyframes ticket-float{
+  0%,100%{ transform:rotate(2.2deg) translateY(0); }
+  50%    { transform:rotate(3.4deg) translateY(-16px); }
+}
+.ticket.is-tilting{ animation:none; transition:transform .16s ease-out; }
+.ticket.is-flipping{ animation:ticket-flip 1.1s var(--ease); }
+@keyframes ticket-flip{
+  0%{ transform:rotate(2.2deg) rotateY(0); }
+  50%{ transform:rotate(0deg) rotateY(180deg) scale(1.04); }
+  100%{ transform:rotate(2.2deg) rotateY(360deg); }
+}
+/* punched notches */
+.ticket::before,.ticket::after{
+  content:""; position:absolute; top:50%; width:26px; height:26px;
+  border-radius:50%; background:var(--cream); transform:translateY(-50%); z-index:3;
+  box-shadow:inset 0 1px 3px rgba(78,13,18,.16);
+}
+.ticket::before{ left:-13px; } .ticket::after{ right:-13px; }
+
+/* shine sweep */
+.ticket-shine{
+  position:absolute; inset:0; overflow:hidden; border-radius:6px; pointer-events:none; z-index:4;
+}
+.ticket-shine::after{
+  content:""; position:absolute; top:-60%; left:-40%; width:36%; height:220%;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.72),rgba(255,255,255,0));
+  transform:rotate(18deg);
+  animation:shine 5.5s ease-in-out infinite;
+}
+@keyframes shine{ 0%{left:-45%} 42%{left:118%} 100%{left:118%} }
+
+.ticket-inner{
+  position:relative; padding:36px 26px 30px; text-align:center;
+  border:1px dashed var(--rose);
+  border-radius:4px;
+}
+.ticket-flowers{
+  position:absolute; top:-16px; right:-12px; z-index:5;
+  color:var(--rose); font-size:30px; line-height:1; transform:rotate(14deg);
+}
+.ticket-flowers span:last-child{ display:block; margin:-6px 0 0 20px; color:var(--red); font-size:20px; transform:rotate(-22deg); }
+
+.heart-badge{
+  display:inline-grid; place-items:center; width:40px; height:40px; border-radius:50%;
+  color:#fff; background:var(--red); font-size:16px; margin-bottom:12px;
+  box-shadow:0 10px 18px -10px rgba(200,16,46,.9);
+  animation:beat 2.1s ease-in-out infinite;
+}
+@keyframes beat{ 0%,100%{transform:scale(1)} 14%{transform:scale(1.16)} 28%{transform:scale(1)} 42%{transform:scale(1.1)} }
+
+.ticket-kicker{ color:var(--rose); font-size:11.5px; font-weight:700; letter-spacing:.09em; }
+.ticket h3.ticket-title{ font-family:var(--serif); font-weight:400; font-size:2.9rem; line-height:1.06; margin:12px 0 16px; color:var(--ink); }
+.ticket-note{ margin:0 auto 24px; max-width:30ch; color:var(--ink-soft); font-size:13px; line-height:1.65; }
+
+.ticket-dates{ display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.ticket-date{ padding:15px 6px; }
+.ticket-date + .ticket-date{ border-left:1px solid var(--line); }
+.ticket-date strong{ display:block; font-size:14.5px; color:var(--ink); }
+.ticket-date span{ display:block; margin-top:5px; color:var(--rose); font-size:10.5px; font-weight:700; letter-spacing:.07em; }
+
+.ticket-foot{ margin-top:18px; color:var(--red); font-size:11.5px; font-weight:700; letter-spacing:.06em; }
+.countdown{ margin-top:12px; font-family:var(--serif); font-size:15px; color:var(--ink-soft); }
+.countdown b{ color:var(--red); font-weight:400; }
+
+/* ============================================================
+   PAGE 3 — THE PLAN
+   ============================================================ */
+#page-plan{ background:var(--red-deep); }
+#page-plan .plan-shell{ display:flex; align-items:center; min-height:calc(100dvh - 150px); }
+.plan-grid{ display:grid; grid-template-columns:.85fr 1.15fr; gap:clamp(30px,5vw,68px); align-items:center; }
+.plan-grid h2{ color:#fff; font-size:clamp(2.9rem,5.6vw,5rem); }
+.plan-grid .eyebrow{ color:var(--rose-pale); }
+.plan-grid .eyebrow::before{ background:var(--rose-pale); }
+.plan-lede{ max-width:52ch; color:var(--rose-pale); font-size:16.5px; line-height:1.8; margin-bottom:26px; opacity:.94; }
+
+.steps{ position:relative; }
+.steps::before{
+  content:""; position:absolute; left:20px; top:34px; bottom:44px; width:1px;
+  background:linear-gradient(180deg,var(--rose),rgba(232,121,140,.1));
+  transform-origin:top; transform:scaleY(0);
+}
+.page.is-active .steps::before{ animation:draw-line 1.5s .45s var(--ease) forwards; }
+@keyframes draw-line{ to{ transform:scaleY(1); } }
+
+.step{
+  display:grid; grid-template-columns:42px 1fr; gap:20px;
+  padding:20px 0; border-top:1px solid rgba(255,255,255,.1);
+}
+.step:last-of-type{ border-bottom:1px solid rgba(255,255,255,.1); }
+.step-num{
+  display:grid; place-items:center; width:42px; height:42px;
+  border:1px solid var(--rose); border-radius:50%;
+  background:var(--red-deep);
+  color:var(--rose); font-size:13px; font-weight:800;
+}
+.step h3{ margin:2px 0 7px; font-size:17.5px; color:#fff; }
+.step p{ color:#e9b9c0; font-size:14.8px; line-height:1.65; }
+
+/* ============================================================
+   PAGE 4 — RSVP
+   ============================================================ */
+.rsvp-sub{ color:var(--ink-soft); font-size:clamp(15px,1.8vw,18px); margin:18px 0 6px; }
+.rsvp-actions{
+  position:relative; display:flex; justify-content:center; align-items:center;
+  gap:20px; min-height:140px; margin-top:26px; width:100%;
+}
+#yesBtn{ --s:1; transform:scale(var(--s)); transform-origin:center; font-size:1.05rem; padding:17px 34px; will-change:transform; }
+#yesBtn:hover{ transform:scale(calc(var(--s) * 1.04)) translateY(-3px); }
+#yesBtn.is-big{ animation:yes-pulse 1.5s ease-in-out infinite; }
+@keyframes yes-pulse{ 0%,100%{ box-shadow:0 14px 26px -14px rgba(200,16,46,.9); } 50%{ box-shadow:0 0 0 14px rgba(200,16,46,.09); } }
+#noBtn{ position:relative; transition:left .28s var(--ease), top .28s var(--ease), transform .28s var(--ease); touch-action:manipulation; }
+
+.bloom{
+  position:fixed; inset:0; z-index:55; pointer-events:none; opacity:0;
+  background:radial-gradient(circle at 50% 55%,rgba(255,255,255,.92),rgba(232,121,140,.5) 38%,rgba(200,16,46,0) 72%);
+}
+.bloom.is-on{ animation:bloom 1.1s ease-out both; }
+@keyframes bloom{ 0%{opacity:0; transform:scale(.6)} 22%{opacity:1} 100%{opacity:0; transform:scale(1.5)} }
+
+.confetti{
+  position:fixed; z-index:58; pointer-events:none; will-change:transform,opacity;
+  animation:float-up linear forwards;
+}
+@keyframes float-up{
+  0%   { transform:translate3d(0,0,0) rotate(0deg) scale(1); opacity:1; }
+  100% { transform:translate3d(var(--dx,0),-118vh,0) rotate(var(--rot,420deg)) scale(1.9); opacity:0; }
+}
+.burst{
+  position:fixed; z-index:59; pointer-events:none; left:50%; top:52%;
+  animation:burst-out 1.5s var(--ease) forwards;
+}
+@keyframes burst-out{
+  0%   { transform:translate(-50%,-50%) scale(.2); opacity:1; }
+  100% { transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(1.25) rotate(var(--rot,180deg)); opacity:0; }
+}
+
+/* ============================================================
+   PAGE 5 — LETTER + VIDEO
+   ============================================================ */
+#page-letter{ background:var(--blush); }
+#page-letter .letter-shell{ display:flex; align-items:flex-start; align-items:safe center; min-height:calc(100dvh - 150px); padding:clamp(16px,3.5vh,42px) 0; }
+.letter-card{
+  position:relative;
+  max-width:820px; margin:0 auto; padding:clamp(28px,5vw,54px);
+  background:var(--paper); border-radius:12px; box-shadow:var(--shadow-lg);
+}
+.letter-card::after{
+  content:""; position:absolute; inset:12px; border:1px dashed var(--rose-pale);
+  border-radius:7px; pointer-events:none;
+}
+.letter-card h2{ margin:16px 0 26px; font-size:clamp(2.3rem,4.6vw,3.1rem); }
+.letter-body p{
+  font-family:var(--serif); color:#5a1e23;
+  font-size:clamp(1.08rem,1.9vw,1.3rem); line-height:1.72;
+  margin-bottom:20px; max-width:62ch;
+}
+.letter-body p i{ color:var(--rose); }
+
+.video-frame{
+  position:relative; margin:30px 0 8px; padding:8px;
+  background:linear-gradient(140deg,var(--rose),var(--red));
+  border-radius:16px; box-shadow:var(--shadow-md);
+}
+.video-frame video{
+  display:block; width:100%; max-height:min(44vh,400px); border-radius:10px;
+  background:#2a0508; outline:none; object-fit:contain;
+}
+.video-fallback{
+  display:none; padding:26px; text-align:center; color:var(--ink-soft);
+  font-size:14px; background:var(--paper); border-radius:10px; line-height:1.6;
+}
+.video-frame.is-missing video{ display:none; }
+.video-frame.is-missing .video-fallback{ display:block; }
+
+.letter-foot{
+  margin-top:26px; text-align:center; color:var(--rose);
+  font-size:12px; font-weight:800; letter-spacing:.12em;
+}
+.heart-rule{ display:flex; align-items:center; gap:12px; justify-content:center; margin-top:18px; color:var(--rose-pale); }
+.heart-rule::before,.heart-rule::after{ content:""; height:1px; width:64px; background:var(--rose-pale); }
+
+/* ============================================================
+   CHROME — music toggle + progress
+   ============================================================ */
+.music{
+  position:fixed; z-index:50;
+  left:calc(18px + env(safe-area-inset-left,0px));
+  bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  display:none; align-items:center; gap:10px;
+  padding:10px 16px 10px 13px; border-radius:999px;
+  border:1px solid var(--line); background:rgba(255,255,255,.82);
+  backdrop-filter:blur(9px);
+  color:var(--ink); font:700 12px var(--sans); cursor:pointer;
+  box-shadow:var(--shadow-md);
+  transition:transform .3s var(--ease), border-color .3s ease;
+}
+.music.is-visible{ display:inline-flex; animation:pop-in .8s var(--ease) both; }
+.music:hover{ transform:translateY(-2px); border-color:var(--rose); }
+.music:focus-visible{ outline:3px solid var(--rose); outline-offset:3px; }
+.bars{ display:flex; align-items:flex-end; gap:2.5px; height:15px; }
+.bars i{ width:3px; height:5px; background:var(--red); border-radius:2px; display:block; }
+.music.is-playing .bars i{ animation:eq .9s ease-in-out infinite; }
+.music.is-playing .bars i:nth-child(2){ animation-delay:.16s; }
+.music.is-playing .bars i:nth-child(3){ animation-delay:.32s; }
+.music.is-playing .bars i:nth-child(4){ animation-delay:.48s; }
+@keyframes eq{ 0%,100%{height:5px} 50%{height:15px} }
+
+.progress{
+  position:fixed; z-index:50; left:0; right:0;
+  width:max-content; margin-inline:auto;
+  bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  display:none; gap:9px; align-items:center;
+  padding:9px 14px; border-radius:999px;
+  background:rgba(255,255,255,.72); backdrop-filter:blur(8px);
+  box-shadow:0 10px 22px -16px rgba(78,13,18,.5);
+}
+body.on-dark .progress{ background:rgba(61,10,14,.5); }
+.progress.is-visible{ display:flex; animation:pop-in .8s var(--ease) both; }
+.progress i{
+  width:7px; height:7px; border-radius:50%; background:var(--rose-pale);
+  transition:all .5s var(--ease);
+}
+.progress i.done{ background:var(--rose); }
+.progress i.now{ width:26px; border-radius:999px; background:var(--red); }
+body.on-dark .progress i{ background:rgba(255,255,255,.28); }
+body.on-dark .progress i.done{ background:var(--rose); }
+body.on-dark .progress i.now{ background:#fff; }
+body.on-dark .music{ background:rgba(61,10,14,.7); border-color:rgba(255,255,255,.18); color:#fff; }
+body.on-dark .music .bars i{ background:var(--rose); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:860px){
+  .hero-grid,.plan-grid{ grid-template-columns:1fr; gap:34px; }
+  .hero{ min-height:auto; padding:22px 0; }
+  .ticket{ transform:rotate(0deg); animation:none; margin:6px auto 0; }
+  .ticket:hover{ transform:rotate(0deg); }
+  .hero h1{ max-width:100%; }
+  #page-plan .plan-shell,#page-letter .letter-shell{ min-height:auto; padding:34px 0; }
+  .center-screen{ min-height:auto; padding:30px 0 10px; }
+  .page{ padding-top:calc(env(safe-area-inset-top,0px) + 18px); }
+  .rsvp-actions{ flex-direction:column; gap:16px; }
+}
+@media (max-width:860px){
+  .music{
+    left:auto; bottom:auto;
+    top:calc(12px + env(safe-area-inset-top,0px));
+    right:calc(14px + env(safe-area-inset-right,0px));
+    padding:11px; border-radius:50%;
+  }
+  #musicLabel{ display:none; }
+}
+@media (max-width:420px){
+  .btn{ padding:14px 24px; font-size:14px; }
+  .ticket-inner{ padding:30px 18px 26px; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  [data-reveal]{ opacity:1; transform:none; }
+  .petal{ display:none; }
+  .steps::before{ transform:scaleY(1); }
+}
+</style>
+</head>
+<body>
+
+<div class="glow glow-a"></div>
+<div class="glow glow-b"></div>
+<div class="glow glow-c"></div>
+<div class="veil" id="veil"></div>
+<div class="bloom" id="bloom"></div>
+
+<!-- Background music: keep the local song next to this file -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="Limahl%20-%20Never%20Ending%20Story%20(Official%20Music%20Video)(MP3_160K).mp3.mpeg" type="audio/mpeg">
+</audio>
+
+<main class="stage">
+
+  <!-- ============ PAGE 1 — THE ENVELOPE ============ -->
+  <section class="page is-active" id="page-envelope">
+    <div class="wrap center-screen">
+      <div class="eyebrow" data-reveal>A letter just arrived</div>
+      <h2 style="margin:18px 0 6px; font-size:clamp(2.2rem,5vw,3.4rem);" data-reveal>Something for you, Mariam</h2>
+
+      <div class="env-stage" data-reveal>
+        <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Open the letter">
+          <div class="env-back"></div>
+          <div class="env-letter">
+            <div class="to">To my Mariam,</div>
+            <div class="body"><span id="typed"></span><span class="caret" id="caret"></span></div>
+            <div class="sign">— Amr</div>
+          </div>
+          <div class="env-front"></div>
+          <div class="env-flap"></div>
+          <div class="seal">A&nbsp;♥&nbsp;M</div>
+        </div>
+      </div>
+
+      <div class="tap-hint" id="tapHint" data-reveal><span class="dot"></span> Tap the seal to open it</div>
+      <button id="btnEnter" class="btn btn-primary is-hidden" style="margin-top:26px;">Read the invitation</button>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 2 — THE INVITATION ============ -->
+  <section class="page" id="page-invite">
+    <div class="wrap hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow" data-reveal>A little birthday surprise</div>
+          <h1 data-reveal>Mariam, will you go on a <em>date</em> with me?</h1>
+          <p class="lede" data-reveal>Your birthday deserves more than a quick happy birthday. I want to make a whole evening of it — good food, a little adventure, and my favourite person sitting across from me.</p>
+          <div class="hero-actions" data-reveal>
+            <button class="btn btn-primary" data-go="page-plan">See what I planned</button>
+            <button class="btn btn-ghost" id="btnFlip">Look at the ticket</button>
+          </div>
+        </div>
+
+        <div class="ticket-scene" data-reveal>
+          <div class="ticket" id="ticket">
+            <div class="ticket-shine"></div>
+            <div class="ticket-flowers" aria-hidden="true"><span>✿</span><span>✿</span></div>
+            <div class="ticket-inner">
+              <span class="heart-badge">♥</span>
+              <div class="ticket-kicker">Official invitation</div>
+              <h3 class="ticket-title">Mariam's<br>date night</h3>
+              <p class="ticket-note">One evening reserved for celebrating you, laughing far too much, and making another favourite memory.</p>
+              <div class="ticket-dates">
+                <div class="ticket-date"><strong>26 September</strong><span>OUR DATE</span></div>
+                <div class="ticket-date"><strong>27 September</strong><span>YOUR BIRTHDAY</span></div>
+              </div>
+              <div class="ticket-foot">Dress code: come as my favourite person</div>
+              <div class="countdown" id="countdown"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 3 — THE PLAN ============ -->
+  <section class="page" id="page-plan">
+    <div class="plan-shell">
+      <div class="wrap plan-grid">
+        <div>
+          <div class="eyebrow" data-reveal>How the night goes</div>
+          <h2 data-reveal style="margin-top:18px;">The plan<br>is simple.</h2>
+        </div>
+        <div>
+          <p class="plan-lede" data-reveal>No big production. Just the two of us, taking the long way through an evening that belongs entirely to you.</p>
+          <div class="steps">
+            <div class="step" data-reveal>
+              <div class="step-num">01</div>
+              <div>
+                <h3>Start with something delicious</h3>
+                <p>Your favourite meal, a table for two, and absolutely no checking the time.</p>
+              </div>
+            </div>
+            <div class="step" data-reveal>
+              <div class="step-num">02</div>
+              <div>
+                <h3>Take photos and make memories</h3>
+                <p>Capture the smiles, the little moments, and everything we'll want to look back on.</p>
+              </div>
+            </div>
+            <div class="step" data-reveal>
+              <div class="step-num">03</div>
+              <div>
+                <h3>Make a little memory</h3>
+                <p>A walk, a view, or a tiny adventure we'll still be talking about years from now.</p>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-light" data-go="page-rsvp" data-reveal style="margin-top:30px;">Now the question</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 4 — THE RSVP ============ -->
+  <section class="page" id="page-rsvp">
+    <div class="wrap center-screen">
+      <div class="eyebrow" data-reveal>Your answer, please</div>
+      <h2 data-reveal style="margin:20px 0 0;">So... is that a yes?</h2>
+      <p class="rsvp-sub" data-reveal>There's only one answer that makes this birthday perfect.</p>
+
+      <div class="rsvp-actions" id="rsvpActions" data-reveal>
+        <button class="btn btn-primary" id="yesBtn">Yes, absolutely ♥</button>
+        <button class="btn btn-ghost" id="noBtn">No / Maybe...</button>
+      </div>
+
+      <button id="btnFinal" class="btn btn-primary is-hidden" style="margin-top:34px;">Read my message to you</button>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 5 — THE MESSAGE ============ -->
+  <section class="page" id="page-letter">
+    <div class="letter-shell">
+      <div class="wrap">
+        <article class="letter-card" data-reveal>
+          <div class="eyebrow">A message from me</div>
+          <h2>Happy Birthday, Mariam! ♥</h2>
+          <div class="letter-body">
+            <p data-reveal>Every time I see you, my heart fills with so much emotion. I love you more than words can say. I am so sorry for the tough times we've been through; everything I do comes from a place of deep love and a desire to protect you.</p>
+            <p data-reveal>I am always in your corner to support and encourage you. Never forget that every step you take in life matters deeply to me. I loved you then, I love you now, and I will love you forever.</p>
+            <p data-reveal>I hope you have the most beautiful life and get everything you wish for <i>(especially more of me!)</i></p>
+          </div>
+
+          <div class="video-frame" id="videoFrame" data-reveal>
+            <video id="birthdayVideo" controls playsinline preload="metadata">
+              <source src="Mariiam-browser.mp4" type="video/mp4">
+            </video>
+            <div class="video-fallback">The video will appear here once <b>Mariiam-browser.mp4</b> is saved in the same folder as this page.</div>
+          </div>
+
+          <div class="heart-rule">♥</div>
+          <div class="letter-foot" data-reveal>MADE WITH LOVE BY AMR</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<button class="music" id="musicBtn" aria-label="Toggle music">
+  <span class="bars"><i></i><i></i><i></i><i></i></span>
+  <span id="musicLabel">Music on</span>
+</button>
+
+<div class="progress" id="progress" aria-hidden="true">
+  <i></i><i></i><i></i><i></i><i></i>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var ORDER   = ["page-envelope","page-invite","page-plan","page-rsvp","page-letter"];
+  var DARK    = { "page-plan": true };
+  var busy    = false;
+
+  var veil     = document.getElementById("veil");
+  var bloom    = document.getElementById("bloom");
+  var audio    = document.getElementById("bgMusic");
+  var musicBtn = document.getElementById("musicBtn");
+  var musicLbl = document.getElementById("musicLabel");
+  var progress = document.getElementById("progress");
+
+  /* ---------------------------------------------------------
+     Drifting petals
+     --------------------------------------------------------- */
+  function makePetals(n){
+    if (reduced) return;
+    for (var i = 0; i < n; i++){
+      var p = document.createElement("div");
+      var size = 7 + Math.random() * 13;
+      p.className = "petal";
+      p.style.left = (Math.random() * 100) + "vw";
+      p.style.width = size + "px";
+      p.style.height = (size * 0.82) + "px";
+      p.style.animationDuration = (13 + Math.random() * 14) + "s";
+      p.style.animationDelay = (-Math.random() * 22) + "s";
+      document.body.appendChild(p);
+    }
+  }
+  makePetals(16);
+
+  /* ---------------------------------------------------------
+     Reveal stagger
+     --------------------------------------------------------- */
+  function stagger(page){
+    var items = page.querySelectorAll("[data-reveal]");
+    for (var i = 0; i < items.length; i++){
+      items[i].style.setProperty("--d", (120 + i * 105) + "ms");
+    }
+  }
+
+  /* ---------------------------------------------------------
+     Navigation
+     --------------------------------------------------------- */
+  var onEnter = {
+    "page-invite": function(){ tickCountdown(); },
+    "page-letter": function(){ /* nothing extra */ }
+  };
+
+  function paintProgress(id){
+    var idx = ORDER.indexOf(id);
+    var dots = progress.children;
+    for (var i = 0; i < dots.length; i++){
+      dots[i].className = i < idx ? "done" : (i === idx ? "now" : "");
+    }
+    // the journey marker retires once she reaches the last page
+    progress.classList.toggle("is-visible", idx > 0 && id !== "page-letter");
+    document.body.classList.toggle("on-dark", !!DARK[id]);
+  }
+
+  function goTo(id){
+    if (busy) return;
+    var current = document.querySelector(".page.is-active");
+    if (!current || current.id === id) return;
+    busy = true;
+
+    current.classList.remove("is-active");
+    current.classList.add("is-leaving");
+
+    veil.classList.remove("sweep");
+    void veil.offsetWidth;                   // restart the sweep animation
+    veil.classList.add("sweep");
+
+    window.setTimeout(function(){
+      current.classList.remove("is-leaving");
+      var next = document.getElementById(id);
+      stagger(next);
+      next.scrollTop = 0;
+      next.classList.add("is-active");
+      paintProgress(id);
+      if (onEnter[id]) onEnter[id]();
+      busy = false;
+    }, reduced ? 20 : 420);
+  }
+
+  document.addEventListener("click", function(e){
+    var trigger = e.target.closest ? e.target.closest("[data-go]") : null;
+    if (trigger) goTo(trigger.getAttribute("data-go"));
+  });
+
+  stagger(document.getElementById("page-envelope"));
+  paintProgress("page-envelope");
+
+  /* ---------------------------------------------------------
+     Music
+     --------------------------------------------------------- */
+  var musicReady = false;
+
+  function showPaused(){
+    musicBtn.classList.add("is-visible");
+    musicBtn.classList.remove("is-playing");
+    musicLbl.textContent = audio.error ? "Add the song file" : "Play the song";
+  }
+
+  function startMusic(){
+    if (musicReady) return;
+    musicReady = true;
+    musicBtn.classList.add("is-visible");     // the control is always reachable
+    audio.volume = 0;
+    var play = audio.play();
+    if (play && play.then){ play.then(fadeIn).catch(showPaused); }
+    else { fadeIn(); }
+    // safety net: autoplay blocked silently, or the mp3 isn't there
+    window.setTimeout(function(){ if (audio.paused) showPaused(); }, 1600);
+  }
+
+  audio.addEventListener("error", showPaused, true);
+
+  function fadeIn(){
+    musicBtn.classList.add("is-visible","is-playing");
+    musicLbl.textContent = "Music on";
+    var v = 0;
+    var t = window.setInterval(function(){
+      v += 0.03;
+      if (v >= 0.62){ v = 0.62; window.clearInterval(t); }
+      try { audio.volume = v; } catch(err){ window.clearInterval(t); }
+    }, 90);
+  }
+
+  musicBtn.addEventListener("click", function(){
+    if (audio.paused){
+      audio.play().then(function(){
+        if (audio.volume < 0.05) fadeIn();
+        musicBtn.classList.add("is-playing");
+        musicLbl.textContent = "Music on";
+      }).catch(function(){
+        musicLbl.textContent = "Song file missing";
+      });
+    } else {
+      audio.pause();
+      musicBtn.classList.remove("is-playing");
+      musicLbl.textContent = "Music off";
+    }
+  });
+
+  /* ---------------------------------------------------------
+     Page 1 — envelope + typed letter
+     --------------------------------------------------------- */
+  var envelope = document.getElementById("envelope");
+  var typedEl  = document.getElementById("typed");
+  var caret    = document.getElementById("caret");
+  var tapHint  = document.getElementById("tapHint");
+  var btnEnter = document.getElementById("btnEnter");
+  var opened   = false;
+
+  var LETTER = "I have something very special to ask you...";
+
+  function typeLetter(){
+    if (reduced){ typedEl.textContent = LETTER; caret.style.display = "none"; return; }
+    var i = 0;
+    var t = window.setInterval(function(){
+      typedEl.textContent = LETTER.slice(0, ++i);
+      if (i >= LETTER.length){
+        window.clearInterval(t);
+        window.setTimeout(function(){ caret.style.display = "none"; }, 1400);
+      }
+    }, 42);
+  }
+
+  function openEnvelope(){
+    if (opened) return;
+    opened = true;
+    envelope.classList.add("is-open");
+    tapHint.classList.add("is-gone");
+    startMusic();
+
+    window.setTimeout(typeLetter, reduced ? 0 : 1250);
+    window.setTimeout(function(){
+      btnEnter.classList.remove("is-hidden");
+      btnEnter.classList.add("btn-appear");
+    }, reduced ? 200 : 2700);
+  }
+
+  envelope.addEventListener("click", openEnvelope);
+  envelope.addEventListener("keydown", function(e){
+    if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openEnvelope(); }
+  });
+  btnEnter.addEventListener("click", function(){ goTo("page-invite"); });
+
+  /* ---------------------------------------------------------
+     Page 2 — ticket tilt, flip, countdown
+     --------------------------------------------------------- */
+  var ticket = document.getElementById("ticket");
+  var scene  = ticket.parentElement;
+
+  if (!reduced && window.matchMedia("(hover: hover)").matches){
+    scene.addEventListener("pointermove", function(e){
+      var r = ticket.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width  - 0.5;
+      var py = (e.clientY - r.top)  / r.height - 0.5;
+      ticket.classList.add("is-tilting");
+      ticket.style.transform =
+        "rotate(2.2deg) rotateY(" + (px * 13).toFixed(2) + "deg) rotateX(" +
+        (-py * 13).toFixed(2) + "deg) translateY(-6px)";
+    });
+    scene.addEventListener("pointerleave", function(){
+      ticket.style.transform = "";
+      ticket.classList.remove("is-tilting");
+    });
+  }
+
+  document.getElementById("btnFlip").addEventListener("click", function(){
+    if (ticket.classList.contains("is-flipping")) return;
+    ticket.style.transform = "";
+    ticket.classList.remove("is-tilting");
+    ticket.classList.add("is-flipping");
+    window.setTimeout(function(){ ticket.classList.remove("is-flipping"); }, 1150);
+  });
+
+  function tickCountdown(){
+    var el = document.getElementById("countdown");
+    var now = new Date();
+    var year = now.getMonth() > 8 ? now.getFullYear() + 1 : now.getFullYear();
+    var target = new Date(year, 8, 26, 19, 0, 0);          // 26 September, 7pm
+    var days = Math.ceil((target - now) / 86400000);
+
+    if (days > 1)       el.innerHTML = "Only <b>" + days + " days</b> until I see you";
+    else if (days === 1) el.innerHTML = "<b>Tomorrow.</b> I'm counting the hours";
+    else                 el.innerHTML = "<b>Tonight.</b> Finally";
+  }
+  tickCountdown();
+
+  /* ---------------------------------------------------------
+     Page 4 — the runaway button + celebration
+     --------------------------------------------------------- */
+  var yesBtn = document.getElementById("yesBtn");
+  var noBtn  = document.getElementById("noBtn");
+  var btnFinal = document.getElementById("btnFinal");
+
+  var dodges = 0;
+  var scale  = 1;
+  var NO_LABELS = ["No / Maybe...","Are you sure?","Think again ♥","Not an option","You can't catch me","Just say yes!"];
+
+  function safeBounds(){
+    var pad = 16;
+    var top = 96;
+    var subEl = document.querySelector("#page-rsvp .rsvp-sub");
+    if (subEl){
+      var r = subEl.getBoundingClientRect();
+      if (r.height) top = r.bottom + 20;
+    }
+    var bottom = window.innerHeight - pad - 60;
+    if (progress.classList.contains("is-visible")){
+      var pr = progress.getBoundingClientRect();
+      if (pr.height) bottom = Math.min(bottom, pr.top - 14);
+    }
+    if (musicBtn.classList.contains("is-visible")){
+      var mr = musicBtn.getBoundingClientRect();
+      // music sits bottom-left on desktop, top-right on narrow screens
+      if (mr.height && mr.top > window.innerHeight / 2){
+        bottom = Math.min(bottom, mr.top - 14);
+      }
+    }
+    bottom = Math.max(top + 56, bottom);
+    return { left: pad, right: window.innerWidth - pad, top: top, bottom: bottom };
+  }
+
+  var detached = false;
+  function ensureDetached(){
+    if (detached) return;
+    var r = noBtn.getBoundingClientRect();
+    noBtn.style.position = "fixed";
+    noBtn.style.margin = "0";
+    noBtn.style.zIndex = "52";
+    noBtn.style.left = r.left + "px";
+    noBtn.style.top  = r.top + "px";
+    document.body.appendChild(noBtn);   // escape the .page — its page-transition
+    detached = true;                    // animation makes "fixed" relative to itself
+    void noBtn.offsetWidth;             // commit the starting point before animating away
+  }
+
+  function dodge(e){
+    if (e) e.preventDefault();
+    ensureDetached();
+    dodges++;
+    noBtn.textContent = NO_LABELS[Math.min(dodges, NO_LABELS.length - 1)];
+    noBtn.style.position = "fixed";
+
+    var w = noBtn.offsetWidth, h = noBtn.offsetHeight;
+    var b = safeBounds();
+    var maxX = Math.max(b.left, b.right  - w);
+    var maxY = Math.max(b.top,  b.bottom - h);
+    var x = b.left + Math.random() * (maxX - b.left);
+    var y = b.top  + Math.random() * (maxY - b.top);
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top  = y + "px";
+    noBtn.style.transform = "rotate(" + (Math.random() * 20 - 10).toFixed(1) + "deg)";
+
+    scale = Math.min(scale + 0.22, 2.1);
+    yesBtn.style.setProperty("--s", scale.toFixed(2));
+    yesBtn.classList.add("is-big");
+    if (scale > 1.5) yesBtn.textContent = "Just say yes ♥";
+  }
+
+  noBtn.addEventListener("mouseenter", dodge);
+  noBtn.addEventListener("pointerdown", dodge);
+  noBtn.addEventListener("click", dodge);
+  noBtn.addEventListener("focus", dodge);
+
+  var EMOJI = ["❤️","💖","🌹","🌸","✨","💕"];
+
+  function rain(count){
+    for (var i = 0; i < count; i++){
+      window.setTimeout(function(){
+        var el = document.createElement("div");
+        el.className = "confetti";
+        el.textContent = EMOJI[Math.floor(Math.random() * EMOJI.length)];
+        el.style.left = (Math.random() * 100) + "vw";
+        el.style.bottom = "-8vh";
+        el.style.fontSize = (0.9 + Math.random() * 2.1).toFixed(2) + "rem";
+        el.style.setProperty("--dx", (Math.random() * 30 - 15).toFixed(0) + "vw");
+        el.style.setProperty("--rot", (Math.random() * 720 - 360).toFixed(0) + "deg");
+        el.style.animationDuration = (3.4 + Math.random() * 2.6).toFixed(2) + "s";
+        document.body.appendChild(el);
+        window.setTimeout(function(){ el.remove(); }, 6200);
+      }, i * 38);
+    }
+  }
+
+  function burst(count){
+    for (var i = 0; i < count; i++){
+      var angle = (Math.PI * 2 * i) / count;
+      var dist  = 160 + Math.random() * 260;
+      var el = document.createElement("div");
+      el.className = "burst";
+      el.textContent = EMOJI[Math.floor(Math.random() * EMOJI.length)];
+      el.style.fontSize = (1.1 + Math.random() * 1.5).toFixed(2) + "rem";
+      el.style.setProperty("--tx", (Math.cos(angle) * dist).toFixed(0) + "px");
+      el.style.setProperty("--ty", (Math.sin(angle) * dist).toFixed(0) + "px");
+      el.style.setProperty("--rot", (Math.random() * 360).toFixed(0) + "deg");
+      document.body.appendChild(el);
+      (function(node){
+        window.setTimeout(function(){ node.remove(); }, 1700);
+      })(el);
+    }
+  }
+
+  yesBtn.addEventListener("click", function(){
+    yesBtn.classList.remove("is-big");
+    yesBtn.style.setProperty("--s", "1");
+    yesBtn.textContent = "I Knew You Would! 🎉";
+    yesBtn.disabled = true;
+    noBtn.style.display = "none";
+
+    bloom.classList.add("is-on");
+    window.setTimeout(function(){ bloom.classList.remove("is-on"); }, 1200);
+
+    if (!reduced){ burst(26); rain(64); }
+
+    btnFinal.classList.remove("is-hidden");
+    btnFinal.classList.add("btn-appear");
+  });
+
+  btnFinal.addEventListener("click", function(){ goTo("page-letter"); });
+
+  /* ---------------------------------------------------------
+     Page 5 — video presence check
+     --------------------------------------------------------- */
+  var video = document.getElementById("birthdayVideo");
+  var musicWasPlaying = false;
+  video.addEventListener("play", function(){
+    musicWasPlaying = !audio.paused;
+    if (musicWasPlaying){
+      audio.pause();
+      musicBtn.classList.remove("is-playing");
+      musicLbl.textContent = "Music paused for video";
+    }
+  });
+  function resumeMusicAfterVideo(){
+    if (!musicWasPlaying) return;
+    musicWasPlaying = false;
+    audio.play().then(function(){
+      musicBtn.classList.add("is-visible","is-playing");
+      musicLbl.textContent = "Music on";
+    }).catch(showPaused);
+  }
+  video.addEventListener("pause", resumeMusicAfterVideo);
+  video.addEventListener("ended", resumeMusicAfterVideo);
+  video.addEventListener("error", function(){
+    document.getElementById("videoFrame").classList.add("is-missing");
+  }, true);
+
+  /* ---------------------------------------------------------
+     Keyboard: Enter advances from the visible primary action
+     --------------------------------------------------------- */
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Enter" || busy) return;
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "button" || tag === "video" || tag === "input") return;
+    var page = document.querySelector(".page.is-active");
+    if (!page) return;
+    var btn = page.querySelector(".btn-primary:not(.is-hidden), .btn-light");
+    if (btn) btn.click();
+  });
+
+})();
+</script>
+</body>
+</html>
